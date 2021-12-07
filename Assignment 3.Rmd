@@ -1,0 +1,195 @@
+---
+title: "Assignment 3"
+author: "ChuangJie(Mike)  Li"
+date: "12/06/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r,}
+  inc_trend <- data.frame(read.csv("https://raw.githubusercontent.com/vera-institute/incarceration-trends/master/incarceration_trends.csv", stringsAsFactors = FALSE))
+```
+
+```{r,}
+  install.packages("Hmisc")
+```
+
+```{r,}
+library(Hmisc)
+describe(inc_trend)
+```
+
+##annual survey of jails
+
+```{r,}
+str(inc_trend)
+```
+
+```{r,}
+ansuja <- inc_trend[, c(2.21)]
+##inc_trend[, c(2.21)]
+```
+
+```{r,}
+install.packages('dplyr')
+```
+
+##Population of people of color in jail
+```{r,}
+library(dplyr)
+```
+
+```{r,}
+col_pop <- inc_trend %>%
+             select(c('aapi_jail_pop', 'black_jail_pop', 'latinx_jail_pop', 'native_jail_pop', 'white_jail_pop'))
+```
+
+
+```{r,}
+summary(col_pop)
+```
+
+##Population of male and female adult in jail
+```{r,}
+ma_fe_ad <- select(inc_trend, female_adult_jail_pop,  male_adult_jail_pop )
+```
+
+```{r,}
+fe_m <- mean(ma_fe_ad$female_adult_jail_pop, na.rm = TRUE)
+ma_m <- mean(ma_fe_ad$male_adult_jail_pop, na.rm = TRUE)
+```
+
+##The peoportion of population of white to people of color
+```{r,}
+white <- sum(col_pop$white_jail_pop, na.rm = TRUE)
+x = c(sum(col_pop$aapi_jail_pop, na.rm = TRUE), sum(col_pop$black_jail_pop, na.rm = TRUE), sum(col_pop$latinx_jail_pop, na.rm = TRUE),sum(col_pop$native_jail_pop, na.rm = TRUE))
+other_col <- sum(x, na.rm = TRUE)
+ratio = white/other_col
+```
+
+##Ratio of population of female to male
+```{r,}
+male <- sum(ma_fe_ad$male_adult_jail_pop, na.rm = TRUE)
+female <- sum(ma_fe_ad$female_adult_jail_pop, na.rm = TRUE)
+ratia_fe_to_ma = female/male
+```
+
+```{r,}
+unique(inc_trend$state)
+```
+
+```{r,}
+NY_state <- inc_trend %>% filter(state =='NY' )
+NY_state
+```
+
+
+```{r,}
+unique(NY_state$county_name)
+```
+
+```{r,}
+ggplot(NY_state, aes(x = NY_state$county_name, y = NY_state$total_jail_pop)) + 
+                           geom_point() + 
+                           labs(title = "The Total Jail Population in all counties in New York")
+```
+
+```{r,}
+library(ggplot2)
+ggplot(data = inc_trend, mapping = aes(x = year, y = total_jail_pop)) + geom_point()
+```
+
+```{r,}
+ggplot(data = inc_trend, mapping = aes(x = year, y = total_jail_pop)) + geom_point() +geom_smooth(method = "lm")
+
+```
+##What is the average value of male/female across all the countie?
+```{r,}
+ave_male = mean(inc_trend$male_prison_pop, na.rm = TRUE)
+ave_female = mean(inc_trend$female_prison_pop,na.rm = TRUE)
+```
+
+##where is higest total jail population?
+```{r,}
+highest <- max(inc_trend$total_jail_pop, na.rm = TRUE)
+Place_of_highest = inc_trend %>% filter(total_jail_pop == highes)
+Place_of_highest
+```
+
+##where is lowest total jail admissions count?
+```{r,}
+lowest <- min(inc_trend$total_jail_adm, na.rm = TRUE)
+adm_lowest <- inc_trend$state[inc_trend$total_jail_adm == lowest]
+#adm_lowest
+```
+
+
+#how much has the jail population - black chenge over last 49 years?
+```{r,}
+ggplot(data = inc_trend, mapping = aes(x = year, y = black_jail_pop)) + geom_point(color = "blue")
+
+```
+
+
+```{r,}
+plot(inc_trend$black_pop_15to64, type = "h")
+```
+
+```{r,}
+p <- plot_ly(inc_trend, x = ~inc_trend$year)%>%
+  add_trace(y = ~inc_trend$black_jail_pop, name = 'Black', mode = 'line')%>%
+  add_trace(y = ~inc_trend$latinx_jail_pop, name = 'Latin', mode = 'line+markers')%>%
+  add_trace(y = ~inc_trend$white_jail_pop, name = 'White', mode = 'markers')
+
+p
+```
+
+```{r,}
+
+ggplot(data = inc_trend, mapping = aes(x = year, y = white_jail_pop)) + geom_point(color = "blue")
+
+```
+##the information of higheat total jail  population
+```{r,}
+inc_trend %>% filter(total_jail_pop == '23467.19')
+
+```
+
+```{r,}
+
+
+```
+
+```{r,}
+
+
+```
+
+```{r,}
+
+
+```
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
